@@ -1,4 +1,18 @@
 language: ruby
 rvm:
-  - 2.1.3
+- 2.0.0
+- 2.1.7
+- 2.2.3
+- ruby-head
+matrix:
+  allow_failures:
+  - rvm: ruby-head
 before_install: gem install bundler -v 1.10.6
+deploy:
+  provider: rubygems
+  api_key:
+    secure: 3zaqJDxBOjtqmeGLhaknigS6Emc9UXVqVkfc6fsg1yHDF7yzi+03jMKuNziZ4LVsrPmmxzPac9R72IMPqsPBKfww6dNPvBt/lwTKv6OrwBHRfs6u0mIeP3R0onmbZgdG0l0tH4sO4/uE0TvaBNs1Raq8ReOkz5Y7jicEopCJLiKUhbe8PmqidG+m8ZSvtXHz7Fgu++6e5ZNxZCBlWMj4KjTzuZzOzDS7SlsgqLUdXZW8zXZG40iDZDtxIthw/sOPm7LS2HFtZHiKlpiLy1p9pnlvn1lRxSd4Ku4e8t18V8GTvPwJ/jlTHTJyaxYZtkk60tv7MMEwM9/l1v9IrBbbvly2SHZlCXlpdUjSyVNbVJYdudWC3oSh9wPNZAwy+BYURa2pQmv4NgIFvvtbMsEQ4gzg0ek6AjdlWpVC/e98CDMV61iTjHrLifiRJZF9ouVTNbcR/lNGGRCjtTI+jmjB8gI1kKPMr2+enZ0k2FBc8rX8kTGVmYybUIb8C9WmN7l0yGWoRUXZK35nt7jeasAUm4v8dCWCUB1qY6lunoHGC1k87kuO6A+YSDr3pmc61ou7y11vagTr8RIQEFTc6g2cLOUzLt9BILREl5ek6IQ0SmR0cFH4h8yZGczcJgw1BankLZZNxXwGFbYwCAXLtcCMJsh5T+Wt0LsRycBMuz79YcI=
+  gem: rusty_json
+  on:
+    tags: true
+    repo: ChrisMacNaughton/rusty_json
