@@ -1,8 +1,6 @@
 # RustyJson
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rusty_json`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+RustyJson is a parser for JSON that takes in a JSON string and outputs [Rust](https://www.rust-lang.org/) structs to use with [rustc_serialize](http://doc.rust-lang.org/rustc-serialize/rustc_serialize/index.html) to parse JSON.
 
 ## Installation
 
@@ -22,7 +20,17 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+json = '{"test":64}'
+parsed = RustyJson.parse(json)
+```
+
+```rust
+struct JSON {
+  test: i64,
+}
+```
+parsed will equal the JSON struct defined above
 
 ## Development
 
@@ -32,7 +40,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rusty_json.
+Bug reports and pull requests are welcome on GitHub at https://github.com/chrismacnaughton/rusty_json.
 
 
 ## License
