@@ -18,7 +18,7 @@ module RustyJson
 
     def parse
       @parsed = JSON.parse(@json)
-      struct = RustStruct.new(@name)
+      struct = RustStruct.new(@name, true)
       if @parsed.is_a? Hash
         struct = parse_hash(@parsed, struct)
       end

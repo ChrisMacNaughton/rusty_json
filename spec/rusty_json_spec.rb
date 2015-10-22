@@ -16,6 +16,17 @@ struct JSON {
     expect(parsed).to eq(rust)
   end
 
+  it 'can print the struct twice' do
+    json = '{"name":"test"}'
+    rust = <<-RUST
+struct JSON {
+  name: String,
+}
+      RUST
+    expect(RustyJson.parse(json)).to eq(rust)
+    expect(RustyJson.parse(json)).to eq(rust)
+  end
+
   it 'parses nested json' do
     json = '{"test":{"value":"string"}}'
     parsed = RustyJson.parse(json)

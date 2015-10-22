@@ -9,7 +9,8 @@ module RustyJson
       Array => 'Vec',
     }
 
-    def initialize(name)
+    def initialize(name, root = false)
+      @root = root
       @printed = false
       @name = name
       @values = {}
@@ -18,6 +19,9 @@ module RustyJson
 
     def reset
       @printed = false
+      @structs.each do |s|
+        s.reset
+      end
     end
 
     def add_value(name, type, subtype = nil)
@@ -71,6 +75,10 @@ struct #{@name} {
       struct << <<-RUST
 }
       RUST
+      if @root
+        reset
+      end
+      struct
     end
 
     private
