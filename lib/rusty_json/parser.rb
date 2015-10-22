@@ -1,6 +1,5 @@
 require 'json'
 require 'set'
-require 'pry'
 
 module RustyJson
   class Parser
