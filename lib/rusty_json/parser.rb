@@ -27,22 +27,24 @@ module RustyJson
 
     private
 
+    def parse_name(n)
+      if @struct_names.include? n
+        parts = n.split('_')
+        if parts.count > 1
+          "#{parts[0]}_#{parts[1].to_i + 1}"
+        else
+          n + "_2"
+        end
+      else
+        n
+      end
+    end
+
     def parse_parts(name, values, struct)
       if values.is_a? Array
         struct = parse_array(name, values, struct)
       elsif values.is_a? Hash
-        n = name.split('_').collect(&:capitalize).join
-        # binding.pry if n.include? 'Key'
-        n = if @struct_names.include? n
-          parts = n.split('_')
-          if parts.count > 1
-            "#{parts[0]}_#{parts[1].to_i + 1}"
-          else
-            n + "_2"
-          end
-        else
-          n
-        end
+        n = parse_name(name.split('_').collect(&:capitalize).join)
         @struct_names << n
         s = RustStruct.new(n)
         s = parse_hash(values, s)
