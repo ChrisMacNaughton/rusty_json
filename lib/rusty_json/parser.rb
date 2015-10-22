@@ -18,9 +18,8 @@ module RustyJson
 
     def parse
       @parsed = JSON.parse(@json)
-      struct = RustStruct.new(@name, true)
       if @parsed.is_a? Hash
-        struct = parse_hash(@parsed, struct)
+        struct = parse_hash(@name, @parsed)
       end
       struct.to_s
     end
@@ -39,20 +38,22 @@ module RustyJson
       end
     end
 
+    def possible_new_struct(s)
+      match = @structs.find{|st| s == st}
+      s = match || s
+      if match.nil?
+        @structs << s
+      end
+      s
+    end
+
     def parse_parts(name, values, struct)
       if values.is_a? Array
         struct = parse_array(name, values, struct)
       elsif values.is_a? Hash
         n = parse_name(name.split('_').collect(&:capitalize).join)
         @struct_names << n
-        s = RustStruct.new(n)
-        s = parse_hash(values, s)
-        match = @structs.find{|st| s == st}
-        s = match || s
-        if match.nil?
-          @struct_names << n
-          @structs << s
-        end
+        s = possible_new_struct( parse_hash(n, values) )
         struct.add_value(name, s)
       else
         struct = parse_value(name, values, struct)
@@ -60,7 +61,9 @@ module RustyJson
       struct
     end
 
-    def parse_hash(hash, struct)
+    def parse_hash(n, hash)
+      struct = RustStruct.new(n)
+      @struct_names << n
       hash.each do |name, values|
         struct = parse_parts(name, values, struct)
       end
