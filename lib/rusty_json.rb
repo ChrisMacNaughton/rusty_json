@@ -17,6 +17,10 @@ module RustyJson
   # In the above example, RustyJson will parse the JSON in the file:
   # json_file.json and then you print the rust structs out to a Rust
   # File.
+  #
+  # @param json [String] the name of the returned struct
+  # @param name [String] the JSON to parse
+  # @return String
 
   def self.parse(json, name = 'JSON')
     parser = Parser.new(name, json)

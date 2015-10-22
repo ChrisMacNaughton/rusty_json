@@ -2,6 +2,16 @@ require 'json'
 require 'set'
 
 module RustyJson
+  # Parser is the base class that actually parses JSON into Rust structs
+  #
+  # Example:
+  # ```ruby
+  # name = 'Test'
+  # json = '{"hello": "world"}'
+  # parser = Parser.new(name, json)
+  # parser.parse
+  # ```
+
   class Parser
     # BASE_TYPES are merely Rust base types that we use before adding our own
     # Structs to them.

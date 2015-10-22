@@ -19,6 +19,9 @@ module RustyJson
       Array => 'Vec',
     }
     # @param name [String] the name of the returned struct
+    # @param root [Boolean] is this the root struct
+    #
+    # Root is used so that we can reset child structs when the to_s is finished
     def initialize(name, root = false)
       @root = root
       @printed = false
@@ -37,6 +40,20 @@ module RustyJson
       end
     end
 
+    # Add Value is how we add keys to the resulting Struct
+    # We need a name and a type, and potentially a subtype
+    #
+    # For example:
+    # types could be String, Fixnum, or Array
+    # If the tyoe is Array, then we need the subtype of the array,
+    # is it an array of integers or strings?
+    #
+    # @param name [String] what is this key in the struct
+    # @param type [Class] What typs are we
+    # @param subtype [Class] What typs are we
+    #
+    # @return true
+
     def add_value(name, type, subtype = nil)
       if type.class == RustyJson::RustStruct || subtype.class == RustyJson::RustStruct
         struct = if type.class == RustyJson::RustStruct
@@ -54,6 +71,7 @@ module RustyJson
       else
         @values[name] = [type, subtype]
       end
+      true
     end
 
     # two Rust structs are equal if all of their keys / value types are the same
