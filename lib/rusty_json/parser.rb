@@ -43,6 +43,8 @@ module RustyJson
     private
 
     def parse_name(n)
+      n = n.split('_').collect(&:capitalize).join
+
       if @struct_names.include? n
         i = 2
         while @struct_names.include? "#{n}_#{i}"
@@ -64,10 +66,11 @@ module RustyJson
     end
 
     def parse_parts(name, values, struct)
+      name = name.gsub('-', '_').gsub(':', '_').gsub('__', '_')
       if values.is_a? Array
         struct = parse_array(name, values, struct)
       elsif values.is_a? Hash
-        n = parse_name(name.split('_').collect(&:capitalize).join)
+        n = parse_name(name)
         @struct_names << n
         s = possible_new_struct( parse_hash(n, values) )
         struct.add_value(name, s)

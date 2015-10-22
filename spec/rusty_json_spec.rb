@@ -1,5 +1,5 @@
 require 'spec_helper'
-
+require 'pry'
 describe RustyJson do
   it 'has a version number' do
     expect(RustyJson::VERSION).not_to be nil
@@ -14,6 +14,26 @@ struct JSON {
 }
       RUST
     expect(parsed).to eq(rust)
+  end
+
+  it 'removes bad key names' do
+    json = '{"mutex-FileJournal::completions_lock": { "wait": { "avgcount": 0,"sum": 0.000000000}}}'
+
+    rust = <<-RUST
+struct Wait {
+  avgcount: i64,
+  sum: f64,
+}
+
+struct MutexFilejournalCompletionsLock {
+  wait: Wait,
+}
+
+struct JSON {
+  mutex_FileJournal_completions_lock: MutexFilejournalCompletionsLock,
+}
+    RUST
+    expect(RustyJson.parse(json)).to eq(rust)
   end
 
   it 'can print the struct twice' do
