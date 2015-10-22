@@ -29,12 +29,11 @@ module RustyJson
 
     def parse_name(n)
       if @struct_names.include? n
-        parts = n.split('_')
-        if parts.count > 1
-          "#{parts[0]}_#{parts[1].to_i + 1}"
-        else
-          n + "_2"
+        i = 2
+        while @struct_names.include? "#{n}_#{i}"
+          i += 1
         end
+        "#{n}_#{i}"
       else
         n
       end

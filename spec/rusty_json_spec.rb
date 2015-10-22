@@ -58,11 +58,15 @@ struct JSON {
 
 
   it 'can handle a recursive reference' do
-    json = '{"key": {"key": {"key": "value"}}}'
+    json = '{"key": {"key": {"key": {"key": 12}}}}'
     parsed = RustyJson.parse(json)
     rust = <<-RUST
+struct Key_3 {
+  key: i64,
+}
+
 struct Key_2 {
-  key: String,
+  key: Key_3,
 }
 
 struct Key {
