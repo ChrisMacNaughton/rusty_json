@@ -1,4 +1,14 @@
 module RustyJson
+  #RustyJson:L:RustStruct is the object that will be translated into
+  # a Rust struct.
+  #
+  # @!attribute name
+  #   @return [String] name of the struct
+  # @!attribute values
+  #   @return [Hash] sub objects in the struct
+  # @!attribute root
+  #   @return is this the root level JSON object?
+
   class RustStruct
     attr_reader :name, :values, :root
 
@@ -8,7 +18,7 @@ module RustyJson
       Float => 'f64',
       Array => 'Vec',
     }
-
+    # @param name [String] the name of the returned struct
     def initialize(name, root = false)
       @root = root
       @printed = false
@@ -17,6 +27,9 @@ module RustyJson
       @structs = Set.new
     end
 
+    # reset must be called to print the struct again, as we don't want to
+    # repeatedly print the same struct when it occurs recursively in the
+    # input JSON
     def reset
       @printed = false
       @structs.each do |s|
@@ -43,19 +56,12 @@ module RustyJson
       end
     end
 
-    def required_structs
-      struct = ""
-      # binding.pry
-      @structs.to_a.each do |nested_struct|
-        struct << nested_struct.to_s + "\n"
-      end
-      struct
-    end
-
+    # two Rust structs are equal if all of their keys / value types are the same
     def == other
       self.values == other.values
     end
 
+    # to_s controlls how to display the RustStruct as a Rust Struct
     def to_s
       return "" if @printed
       @printed = true
@@ -82,6 +88,15 @@ struct #{@name} {
     end
 
     private
+
+    def required_structs
+      struct = ""
+      # binding.pry
+      @structs.to_a.each do |nested_struct|
+        struct << nested_struct.to_s + "\n"
+      end
+      struct
+    end
 
     def self.add_type(name, value)
       @@types[name] = value

@@ -3,12 +3,16 @@ require 'set'
 
 module RustyJson
   class Parser
+    # BASE_TYPES are merely Rust base types that we use before adding our own
+    # Structs to them.
     BASE_TYPES = {
       String => 'String',
       Fixnum => 'i64',
       Float => 'f64',
     }
 
+    # @param name [String] the name of the returned root JSON struct
+    # @param json [String] the JSON string to parse into a Rust struct
     def initialize(name, json)
       @name = name
       @json = json
@@ -16,6 +20,8 @@ module RustyJson
       @structs = Set.new
     end
 
+    # parse takes the given JSON string and turns it into a string of
+    # Rust structs, suitable for use with rustc_serialize.
     def parse
       @parsed = JSON.parse(@json)
       if @parsed.is_a? Hash
