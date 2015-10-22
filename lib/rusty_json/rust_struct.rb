@@ -1,6 +1,6 @@
 module RustyJson
   class RustStruct
-    attr_reader :name, :values
+    attr_reader :name, :values, :root
 
     @@types = {
       String => 'String',

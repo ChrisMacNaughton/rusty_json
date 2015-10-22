@@ -17,6 +17,40 @@ struct JSON {
     expect(struct.to_s).to eq(rust)
   end
 
+  it 'can be root' do
+    struct = RustyJson::RustStruct.new('Json', true)
+    expect(struct.root).to be_truthy
+    struct.add_value('name', String)
+
+    rust = <<-RUST
+struct Json {
+  name: String,
+}
+    RUST
+
+    expect(struct.to_s).to eq(rust)
+    expect(struct.to_s).to eq(rust)
+  end
+
+  it 'can reset' do
+    struct = RustyJson::RustStruct.new('Json')
+    expect(struct.root).to be_falsey
+    struct.add_value('name', String)
+
+    rust = <<-RUST
+struct Json {
+  name: String,
+}
+    RUST
+
+    expect(struct.to_s).to eq(rust)
+    expect(struct.to_s).to eq('')
+
+    struct.reset
+
+    expect(struct.to_s).to eq(rust)
+  end
+
   it 'can be nested' do
     parent = RustyJson::RustStruct.new('Parent')
     parent.add_value('name', String)
