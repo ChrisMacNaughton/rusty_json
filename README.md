@@ -1,5 +1,17 @@
 # RustyJson
 
+[![Quality](https://img.shields.io/codeclimate/github/ChrisMacNaughton/rusty_json.svg?style=flat-square)](https://codeclimate.com/github/ChrisMacNaughton/rusty_json)
+[![Coverage](https://img.shields.io/codeclimate/coverage/github/ChrisMacNaughton/rusty_json.svg?style=flat-square)](https://codeclimate.com/github/ChrisMacNaughton/rusty_json)
+[![Build](https://img.shields.io/travis-ci/ChrisMacNaughton/rusty_json.svg?style=flat-square)](https://travis-ci.org/ChrisMacNaughton/rusty_json)
+[![Dependencies](https://img.shields.io/gemnasium/ChrisMacNaughton/rusty_json.svg?style=flat-square)](https://gemnasium.com/ChrisMacNaughton/rusty_json)
+[![Docs](https://inch-ci.org/github/ChrisMacNaughton/rusty_json.svg?branch=master)](http://inch-ci.org/github/ChrisMacNaughton/rusty_json/branch/master)
+[![Issues](https://img.shields.io/github/issues/ChrisMacNaughton/rusty_json.svg?style=flat-square)](https://github.com/ChrisMacNaughton/rusty_json/issues)
+[![Downloads](https://img.shields.io/gem/dtv/rusty_json.svg?style=flat-square)](https://rubygems.org/gems/rusty_json)
+[![Tags](https://img.shields.io/github/tag/ChrisMacNaughton/rusty_json.svg?style=flat-square)](https://github.com/ChrisMacNaughton/rusty_json/tags)
+[![Releases](https://img.shields.io/github/release/ChrisMacNaughton/rusty_json.svg?style=flat-square)](https://github.com/ChrisMacNaughton/rusty_json/releases)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/gem/v/rusty_json.svg?style=flat-square)](https://rubygems.org/gems/rusty_json)
+
 RustyJson is a parser for JSON that takes in a JSON string and outputs [Rust](https://www.rust-lang.org/) structs to use with [rustc_serialize](http://doc.rust-lang.org/rustc-serialize/rustc_serialize/index.html) to parse JSON.
 
 ## Installation
