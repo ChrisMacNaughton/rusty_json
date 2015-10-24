@@ -1,5 +1,6 @@
 require 'json'
 require 'set'
+require 'active_support/inflector'
 
 module RustyJson
   # Parser is the base class that actually parses JSON into Rust structs
@@ -96,7 +97,15 @@ module RustyJson
         types << v.class
       end
       fail("Cannot handle multi typed arrays") if types.count > 1
-      struct.add_value(name, Array, types.to_a.first)
+      # binding.pry
+      type = types.to_a.first
+      if type == Hash
+        # binding.pry
+        n = ActiveSupport::Inflector.singularize(name)
+        type = parse_hash(n, values.first)
+      end
+      # binding.pry
+      struct.add_value(name, Array, type)
       struct
     end
 

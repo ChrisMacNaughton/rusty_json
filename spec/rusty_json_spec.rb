@@ -36,6 +36,42 @@ struct JSON {
     expect(RustyJson.parse(json)).to eq(rust)
   end
 
+  context 'with an array' do
+    it 'handles arrays of strings' do
+      json = '{"age":33,"name":"Luc","hobbies":["fishing"]}'
+      rust = <<-RUST
+struct JSON {
+  age: i64,
+  name: String,
+  hobbies: Vec<String>,
+}
+      RUST
+      expect(RustyJson.parse(json)).to eq(rust)
+    end
+    it 'handles an array of structs' do
+      json = '{
+        "users": [
+          {
+            "id": 1,
+            "name": "Lauren"
+          }
+        ]
+      }'
+
+      rust = <<-RUST
+struct user {
+  id: i64,
+  name: String,
+}
+
+struct JSON {
+  users: Vec<user>,
+}
+      RUST
+
+      expect(RustyJson.parse(json)).to eq(rust)
+    end
+  end
   it 'can print the struct twice' do
     json = '{"name":"test"}'
     rust = <<-RUST
