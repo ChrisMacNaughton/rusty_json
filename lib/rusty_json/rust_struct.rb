@@ -16,7 +16,10 @@ module RustyJson
       String => 'String',
       Fixnum => 'i64',
       Float => 'f64',
+      TrueClass => 'bool',
+      FalseClass => 'bool',
       Array => 'Vec',
+      NilClass => 'Option<?>'
     }
     # @param name [String] the name of the returned struct
     # @param root [Boolean] is this the root struct
@@ -35,9 +38,7 @@ module RustyJson
     # input JSON
     def reset
       @printed = false
-      @structs.each do |s|
-        s.reset
-      end
+      @structs.each(&:reset)
     end
 
     # Add Value is how we add keys to the resulting Struct
@@ -56,64 +57,48 @@ module RustyJson
 
     def add_value(name, type, subtype = nil)
       if type.class == RustyJson::RustStruct || subtype.class == RustyJson::RustStruct
-        struct = if type.class == RustyJson::RustStruct
+        if type.class == RustyJson::RustStruct
           t = type
           type = type.name
-          t
+          struct = t
         elsif subtype.class == RustyJson::RustStruct
           s = subtype
           subtype = subtype.name
-          s
+          struct = s
         end
         @structs << struct
         RustStruct.add_type(struct.name, struct.name)
-        @values[name] = [type, subtype]
-      else
-        @values[name] = [type, subtype]
       end
+      @values[name] = [type, subtype]
       true
     end
 
     # two Rust structs are equal if all of their keys / value types are the same
-    def == other
-      self.values == other.values
+    def ==(other)
+      values == other.values
     end
 
     # to_s controlls how to display the RustStruct as a Rust Struct
     def to_s
-      return "" if @printed
+      return '' if @printed
       @printed = true
       struct = required_structs
-      # binding.pry
-      struct << <<-RUST
-struct #{@name} {
-      RUST
-      @values.each do |attr_name, type|
-        if type[1] == nil
-          struct += "  #{attr_name}: #{RustStruct.type_name(type[0])}"
-        else
-          struct += "  #{attr_name}: #{RustStruct.type_name(type[0])}<#{RustStruct.type_name(type[1])}>"
-        end
-        struct += ",\n"
+      members = @values.map do |key, value|
+        type = RustStruct.type_name(value[0])
+        subtype = RustStruct.type_name(value[1])
+        member = "    #{key}: #{type}"
+        member << "<#{subtype}>" unless value[1].nil?
+        member
       end
-      struct << <<-RUST
-}
-      RUST
-      if @root
-        reset
-      end
+      struct << "struct #{@name} {\n" + members.join(",\n") + "\n}\n"
+      reset if @root
       struct
     end
 
     private
 
     def required_structs
-      struct = ""
-      # binding.pry
-      @structs.to_a.each do |nested_struct|
-        struct << nested_struct.to_s + "\n"
-      end
-      struct
+      @structs.map(&:to_s).join + "\n"
     end
 
     def self.add_type(name, value)
