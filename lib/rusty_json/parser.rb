@@ -12,106 +12,72 @@ module RustyJson
   # parser = Parser.new(name, json)
   # parser.parse
   # ```
-
   class Parser
-    # BASE_TYPES are merely Rust base types that we use before adding our own
-    # Structs to them.
-    BASE_TYPES = {
-      String => 'String',
-      Fixnum => 'i64',
-      Float => 'f64',
-    }
-
     # @param name [String] the name of the returned root JSON struct
     # @param json [String] the JSON string to parse into a Rust struct
     def initialize(name, json)
       @name = name
       @json = json
-      @struct_names = Set.new
-      @structs = Set.new
     end
 
     # parse takes the given JSON string and turns it into a string of
     # Rust structs, suitable for use with rustc_serialize.
     def parse
-      @parsed = JSON.parse(@json)
-      if @parsed.is_a? Hash
-        struct = parse_hash(@name, @parsed)
-      end
-      struct.to_s
+      (type, subtype) = parse_object([@name], JSON.parse(@json))
+      (subtype || type).to_s.gsub(/\n\n$/, "\n")
     end
 
     private
 
-    def parse_name(n)
-      n = n.split('_').collect(&:capitalize).join
+    def clean_name(name)
+      name.gsub('-', '_').gsub(':', '_').gsub('__', '_')
+    end
 
-      if @struct_names.include? n
-        i = 2
-        while @struct_names.include? "#{n}_#{i}"
-          i += 1
+    def parse_name(name)
+      clean_name(name).split('_').map(&:capitalize).join
+    end
+
+    def parse_object(key_path, object)
+      if object.is_a? Array
+        parse_array(key_path, object)
+      elsif object.is_a? Hash
+        parse_hash(key_path, object)
+      else
+        parse_value(key_path, object)
+      end
+    end
+
+    def parse_hash(key_path, hash)
+      name = ActiveSupport::Inflector.singularize(key_path.map { |key| parse_name(key) }.join(''))
+      struct = RustStruct.new(name)
+      hash.each do |key, value|
+        struct.add_value(clean_name(key), *parse_object(key_path + [key], value))
+      end
+      [struct, nil]
+    end
+
+    def parse_array(key_path, array)
+      if Set.new(array.map(&:class)).count > 1
+        fail('Cannot handle multi-typed arrays')
+      end
+      object = (array.first.is_a? Hash) ? densify_array(array) : array.first
+      subtype = array.empty? ? nil : parse_object(key_path, object).first
+      [Array, subtype]
+    end
+
+    def parse_value(_key_path, value)
+      [value.class, nil]
+    end
+
+    def densify_array(array)
+      # Try to get rid of as much ambiguity, as possible:
+      object = array.first
+      array.each do |hash|
+        hash.each do |key, value|
+          object[key] ||= value
         end
-        "#{n}_#{i}"
-      else
-        n
       end
-    end
-
-    def possible_new_struct(s)
-      match = @structs.find{|st| s == st}
-      s = match || s
-      if match.nil?
-        @structs << s
-      end
-      s
-    end
-
-    def parse_parts(name, values, struct)
-      name = name.gsub('-', '_').gsub(':', '_').gsub('__', '_')
-      if values.is_a? Array
-        struct = parse_array(name, values, struct)
-      elsif values.is_a? Hash
-        n = parse_name(name)
-        @struct_names << n
-        s = possible_new_struct( parse_hash(n, values) )
-        struct.add_value(name, s)
-      else
-        struct = parse_value(name, values, struct)
-      end
-      struct
-    end
-
-    def parse_hash(n, hash)
-      struct = RustStruct.new(n)
-      @struct_names << n
-      hash.each do |name, values|
-        struct = parse_parts(name, values, struct)
-      end
-      struct
-    end
-
-    def parse_array(name, values, struct)
-      # binding.pry
-      types = Set.new
-      values.each do |v|
-        types << v.class
-      end
-      fail("Cannot handle multi typed arrays") if types.count > 1
-      # binding.pry
-      type = types.to_a.first
-      if type == Hash
-        # binding.pry
-        n = ActiveSupport::Inflector.singularize(name)
-        type = parse_hash(n, values.first)
-      end
-      # binding.pry
-      struct.add_value(name, Array, type)
-      struct
-    end
-
-    def parse_value(name, value, struct)
-      struct.add_value(name, value.class)
-      struct
+      object
     end
   end
 end
