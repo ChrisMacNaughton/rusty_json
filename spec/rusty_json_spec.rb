@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'pry'
+
 describe RustyJson do
   it 'has a version number' do
     expect(RustyJson::VERSION).not_to be nil
@@ -9,8 +9,8 @@ describe RustyJson do
     json = '{"name":"test"}'
     parsed = RustyJson.parse(json)
     rust = <<-RUST
-struct JSON {
-  name: String,
+struct Json {
+    name: String,
 }
       RUST
     expect(parsed).to eq(rust)
@@ -20,17 +20,17 @@ struct JSON {
     json = '{"mutex-FileJournal::completions_lock": { "wait": { "avgcount": 0,"sum": 0.000000000}}}'
 
     rust = <<-RUST
-struct Wait {
-  avgcount: i64,
-  sum: f64,
+struct JsonMutexFilejournalCompletionsLockWait {
+    avgcount: i64,
+    sum: f64,
 }
 
-struct MutexFilejournalCompletionsLock {
-  wait: Wait,
+struct JsonMutexFilejournalCompletionsLock {
+    wait: JsonMutexFilejournalCompletionsLockWait,
 }
 
-struct JSON {
-  mutex_FileJournal_completions_lock: MutexFilejournalCompletionsLock,
+struct Json {
+    mutex_FileJournal_completions_lock: JsonMutexFilejournalCompletionsLock,
 }
     RUST
     expect(RustyJson.parse(json)).to eq(rust)
@@ -40,10 +40,10 @@ struct JSON {
     it 'handles arrays of strings' do
       json = '{"age":33,"name":"Luc","hobbies":["fishing"]}'
       rust = <<-RUST
-struct JSON {
-  age: i64,
-  name: String,
-  hobbies: Vec<String>,
+struct Json {
+    age: i64,
+    name: String,
+    hobbies: Vec<String>,
 }
       RUST
       expect(RustyJson.parse(json)).to eq(rust)
@@ -59,13 +59,13 @@ struct JSON {
       }'
 
       rust = <<-RUST
-struct user {
-  id: i64,
-  name: String,
+struct JsonUser {
+    id: i64,
+    name: String,
 }
 
-struct JSON {
-  users: Vec<user>,
+struct Json {
+    users: Vec<JsonUser>,
 }
       RUST
 
@@ -75,8 +75,8 @@ struct JSON {
   it 'can print the struct twice' do
     json = '{"name":"test"}'
     rust = <<-RUST
-struct JSON {
-  name: String,
+struct Json {
+    name: String,
 }
       RUST
     expect(RustyJson.parse(json)).to eq(rust)
@@ -88,12 +88,12 @@ struct JSON {
     parsed = RustyJson.parse(json)
 
     rust = <<-RUST
-struct Test {
-  value: String,
+struct JsonTest {
+    value: String,
 }
 
-struct JSON {
-  test: Test,
+struct Json {
+    test: JsonTest,
 }
     RUST
     expect(parsed).to eq(rust)
@@ -104,8 +104,8 @@ struct JSON {
     parsed = RustyJson.parse(json)
 
     rust = <<-RUST
-struct JSON {
-  key: Vec<i64>,
+struct Json {
+    key: Vec<i64>,
 }
     RUST
     expect(parsed).to eq(rust)
@@ -116,8 +116,8 @@ struct JSON {
     parsed = RustyJson.parse(json)
 
     rust = <<-RUST
-struct JSON {
-  test: i64,
+struct Json {
+    test: i64,
 }
     RUST
     expect(parsed).to eq(rust)
@@ -128,20 +128,20 @@ struct JSON {
     json = '{"key": {"key": {"key": {"key": 12}}}}'
     parsed = RustyJson.parse(json)
     rust = <<-RUST
-struct Key_3 {
-  key: i64,
+struct JsonKeyKeyKey {
+    key: i64,
 }
 
-struct Key_2 {
-  key: Key_3,
+struct JsonKeyKey {
+    key: JsonKeyKeyKey,
 }
 
-struct Key {
-  key: Key_2,
+struct JsonKey {
+    key: JsonKeyKey,
 }
 
-struct JSON {
-  key: Key,
+struct Json {
+    key: JsonKey,
 }
     RUST
 
