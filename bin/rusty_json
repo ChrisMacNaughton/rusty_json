@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require "rusty_json"
+
+if $stdin.tty? && ARGV.empty?
+  puts "USAGE: $ echo '{\"test\":64}' | rusty_json"
+  puts "USAGE: $ rusty_json path/to/file.json"
+else
+  puts RustyJson.parse(ARGF.read)
+end
