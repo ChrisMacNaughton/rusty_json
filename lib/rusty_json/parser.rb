@@ -18,6 +18,7 @@ module RustyJson
     def initialize(name, json)
       @name = name
       @json = json
+      @structs = Set.new
     end
 
     # parse takes the given JSON string and turns it into a string of
@@ -47,11 +48,22 @@ module RustyJson
       end
     end
 
+    def possible_new_struct(s)
+      match = @structs.find{|st| s == st}
+      s = match || s
+      if match.nil?
+        @structs << s
+      end
+      s
+    end
+
     def parse_hash(key_path, hash)
       name = ActiveSupport::Inflector.singularize(key_path.map { |key| parse_name(key) }.join(''))
       struct = RustStruct.new(name)
       hash.each do |key, value|
-        struct.add_value(clean_name(key), *parse_object(key_path + [key], value))
+        val = *parse_object(key_path + [key], value)
+        val[0] = possible_new_struct(val[0]) if val[0].is_a? RustStruct
+        struct.add_value(clean_name(key), *val)
       end
       [struct, nil]
     end

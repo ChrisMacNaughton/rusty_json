@@ -36,6 +36,33 @@ struct Json {
     expect(RustyJson.parse(json)).to eq(rust)
   end
 
+  it 'matches duplicate syntax' do
+    json = '{
+  "data1":
+  {
+    "name": "key",
+    "val": 1
+  },
+  "data2": {
+    "name": "key",
+    "val": 2
+  }
+}'
+
+    rust = <<-RUST
+struct JsonData1 {
+    name: String,
+    val: i64,
+}
+
+struct Json {
+    data1: JsonData1,
+    data2: JsonData1,
+}
+    RUST
+    expect(RustyJson.parse(json)).to eq(rust)
+  end
+
   context 'with an array' do
     it 'handles arrays of strings' do
       json = '{"age":33,"name":"Luc","hobbies":["fishing"]}'
