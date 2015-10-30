@@ -86,6 +86,9 @@ module RustyJson
       members = @values.map do |key, value|
         type = RustStruct.type_name(value[0])
         subtype = RustStruct.type_name(value[1])
+        # TODO: add option for pub / private
+        #       Will this be a per field thing that is configurable from
+        #       within the JSON or will it be configured on the parse command?
         member = "    pub #{key}: #{type}"
         member << "<#{subtype}>" unless value[1].nil?
         member
