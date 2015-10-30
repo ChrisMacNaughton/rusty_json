@@ -86,11 +86,11 @@ module RustyJson
       members = @values.map do |key, value|
         type = RustStruct.type_name(value[0])
         subtype = RustStruct.type_name(value[1])
-        member = "    #{key}: #{type}"
+        member = "    pub #{key}: #{type}"
         member << "<#{subtype}>" unless value[1].nil?
         member
       end
-      struct << "struct #{@name} {\n" + members.join(",\n") + ",\n}\n\n"
+      struct << "pub struct #{@name} {\n" + members.join(",\n") + ",\n}\n\n"
       struct = struct.gsub("\n\n\n", "\n\n")
       reset if @root
       struct

@@ -1,16 +1,16 @@
 require 'spec_helper'
 require 'pry'
 describe RustyJson::RustStruct do
-  it 'can build a Rust struct' do
+  it 'can build a Rust pub struct' do
     struct = RustyJson::RustStruct.new('JSON', true)
 
     struct.add_value('name', String)
     struct.add_value('types', Array, Fixnum)
 
     rust = <<-RUST
-struct JSON {
-    name: String,
-    types: Vec<i64>,
+pub struct JSON {
+    pub name: String,
+    pub types: Vec<i64>,
 }
 
     RUST
@@ -24,8 +24,8 @@ struct JSON {
     struct.add_value('name', String)
 
     rust = <<-RUST
-struct Json {
-    name: String,
+pub struct Json {
+    pub name: String,
 }
 
     RUST
@@ -40,8 +40,8 @@ struct Json {
     struct.add_value('name', String)
 
     rust = <<-RUST
-struct Json {
-    name: String,
+pub struct Json {
+    pub name: String,
 }
 
     RUST
@@ -71,22 +71,22 @@ struct Json {
     person.add_value('jobs', Array, job)
 
     rust = <<-RUST
-struct Parent {
-    name: String,
+pub struct Parent {
+    pub name: String,
 }
 
-struct Job {
-    name: String,
-    start: i64,
-    end: i64,
+pub struct Job {
+    pub name: String,
+    pub start: i64,
+    pub end: i64,
 }
 
-struct Person {
-    name: String,
-    age: i64,
-    mother: Parent,
-    father: Parent,
-    jobs: Vec<Job>,
+pub struct Person {
+    pub name: String,
+    pub age: i64,
+    pub mother: Parent,
+    pub father: Parent,
+    pub jobs: Vec<Job>,
 }
 
     RUST
